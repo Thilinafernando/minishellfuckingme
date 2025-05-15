@@ -1,36 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tkurukul <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/05 01:31:10 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/16 00:04:52 by tkurukul         ###   ########.fr       */
+/*   Created: 2024/11/18 16:17:23 by tkurukul          #+#    #+#             */
+/*   Updated: 2024/11/18 17:45:32 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <stdio.h>
 
-void	free3(char ***matrix)
+void	*ft_memset(void *str, int a, size_t n)
 {
-	int	i;
+	size_t			i;
+	unsigned char	*s;
 
-	if (!matrix)
-		return ;
+	s = (unsigned char *) str;
 	i = 0;
-	while (matrix[i])
+	while (i < n)
 	{
-		free_mat(matrix[i]);
+		s[i] = (unsigned char)a;
 		i++;
 	}
-	free(matrix);
+	return (s);
 }
-
-void	free_all(t_info *info)
+/*
+int	main(void)
 {
-	free3(info->exec);
-	free_mat(info->env);
-	free(info->oldpwd);
-	close_fd(info->fd_in_out);
-}
+	char	str[10];
+	ft_memset(str, -45, 5);
+	printf("%s",str);
+}*/

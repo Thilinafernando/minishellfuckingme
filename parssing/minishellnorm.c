@@ -6,13 +6,15 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:22:23 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/13 17:50:26 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/15 23:41:41 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../built-ins/minishell.h"
 
-static t_token	*handle_pipe(int *i, t_token *head, t_token *current)
+int exit_status = 0;
+
+t_token	*handle_pipe(int *i, t_token *head, t_token *current)
 {
 	t_token	*new_token;
 
@@ -27,7 +29,7 @@ static t_token	*handle_pipe(int *i, t_token *head, t_token *current)
 	return (head);
 }
 
-static t_token	*handle_redirection(char *input, int *i, t_token *head, t_token *current)
+t_token	*handle_redirection(char *input, int *i, t_token *head, t_token *current)
 {
 	t_token	*new_token;
 
@@ -107,7 +109,7 @@ t_token *join_word_segment(char *segment, t_token *head, t_token **current_word_
 }
 
 // Modified handle_word to extract word segment
-static char *extract_word_segment(char *input, int *i)
+char *extract_word_segment(char *input, int *i)
 {
 	int start;
 	//char *word;
@@ -122,7 +124,7 @@ static char *extract_word_segment(char *input, int *i)
 }
 
 // Modified handle_single_quotes to return string content
-static char *extract_single_quote_content(char *input, int *i)
+char *extract_single_quote_content(char *input, int *i)
 {
 	int content_start = *i + 1; // Skip the opening quote
 	char quote_char = input[*i];
@@ -333,9 +335,11 @@ int main(int ac, char **av, char **env)
 	{
 		set_signals();
 		info.pos = 0;
-		info.flag_ri = 0;
+		info.fd_in_child = -420;
+		info.fd_out_child = -420;
 		info.exec = NULL;
 		info.tmp = NULL;
+		info.oldpwd = NULL;
 		//signal(SIGINT, ctrl_c);
 		// signal(SIGQUIT, estat);
 		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
@@ -361,7 +365,7 @@ int main(int ac, char **av, char **env)
 			}
 			if (token)
 			{
-				// printf("%d\n", token->type);
+				printf("%d\n", token->type);
 				form_main(token, &info);
 				i = 0;
 				while (info.exec[i])

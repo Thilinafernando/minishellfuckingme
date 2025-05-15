@@ -1,36 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tkurukul <thilinaetoro4575@gmail.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/05 01:31:10 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/16 00:04:52 by tkurukul         ###   ########.fr       */
+/*   Created: 2024/12/02 11:33:23 by tkurukul          #+#    #+#             */
+/*   Updated: 2025/04/30 22:16:37 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "ft_printf.h"
 
-void	free3(char ***matrix)
+int	ft_putstr(int fd, char *str)
 {
 	int	i;
 
-	if (!matrix)
-		return ;
-	i = 0;
-	while (matrix[i])
+	if (!str)
 	{
-		free_mat(matrix[i]);
+		write(fd, "(null)", 6);
+		return (6);
+	}
+	i = 0;
+	while (str[i] != '\0')
+	{
+		write(fd, &str[i], 1);
 		i++;
 	}
-	free(matrix);
-}
-
-void	free_all(t_info *info)
-{
-	free3(info->exec);
-	free_mat(info->env);
-	free(info->oldpwd);
-	close_fd(info->fd_in_out);
+	return (i);
 }

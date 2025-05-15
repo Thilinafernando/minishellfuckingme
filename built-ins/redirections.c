@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 22:04:01 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/13 21:04:33 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 00:50:13 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,59 +14,95 @@
 
 #include "minishell.h"
 
-int	ft_input(char **exec)
+int	ft_input(char **exec, t_info *info)
 {
 	int	fd;
 
 	fd = open(exec[1], O_RDONLY);
 	if (fd == -1)
-		return (estat(126), -1);
-	if(dup2(fd, 0) == -1)
 	{
-		ft_printf(2, "Minishell: failed dup\n");
-		return (estat(1), -1);
+		ft_printf(2., "Minishell : %s: %s\n", exec[1], strerror(errno));
+		return (estat(126), -1);
 	}
-	close(fd);
+	info->fd_in_child = fd;
 	return (0);
 }
 
-int	ft_output(char **exec)
+int	ft_output(char **exec, t_info *info)
 {
 	int	fd;
 
 	fd = open(exec[1], O_WRONLY | O_CREAT| O_TRUNC, 0644);
 	if (fd == -1)
-		return (estat(1), -1);
-	if(dup2(fd, 1) == -1)
 	{
-		ft_printf(2, "Minishell: failed dup\n");
-		return (estat(1), -1);
+		ft_printf(2., "Minishell : %s: %s\n", exec[1], strerror(errno));
+		return (estat(126), -1);
 	}
-	close(fd);
+	info->fd_out_child = fd;
 	return (0);
 }
 
-int	ft_append(char **exec)
+int	ft_append(char **exec, t_info *info)
 {
 	int	fd;
 
 	fd = open(exec[1], O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
-		return (-1);
-	if(dup2(fd, 1) == -1)
 	{
-		ft_printf(2, "Minishell: failed dup\n");
-		return (-1);
+		ft_printf(2., "Minishell : %s: %s\n", exec[1], strerror(errno));
+		return (estat(126), -1);
 	}
-	close(fd);
+	info->fd_out_child = fd;
 	return (0);
 }
 
-void	ft_heredoc_process(char **exec, int pipefd[2], t_info *info)
+char	*heredoc_filename(void)
+{
+	char	*pid;
+	char	*filename;
+	char	*tmp;
+
+	pid = ft_itoa(getpid());
+	if (!pid)
+		return (NULL);
+	tmp = ft_strjoin("/tmp/.heredoc_", pid);
+	free(pid);
+	if (!tmp)
+		return (NULL);
+	filename = ft_strjoin(tmp, ".tmp");
+	free(tmp);
+	return (filename);
+}
+
+// expand dollar here!
+
+void	ft_heredoc_process(char **exec, t_info *info, char *filename)
 {
 	char	*str;
-	int		i;
+	int		fd;
+	// int		std_in;
 
+
+	// std_in = open("/dev/tty", O_RDONLY);
+	// if (std_in == -1)
+	// {
+	// 	ft_printf(2, "Minishell: cannot open /dev/tty\n");
+	// 	return (free(filename), exit(1));
+	// }
+	// if (dup2(std_in, STDIN_FILENO) == -1)
+	// {
+	// 	ft_printf(2, "Minishell: dup2 failed\n");
+	// 	close(std_in);
+	// 	free(filename);
+	// 	exit(1);
+	// }
+	// close(std_in);
+	fd = open(filename, O_CREAT| O_TRUNC | O_WRONLY, 0644);
+	if (fd == -1)
+	{
+		ft_printf(2, "Minishell : %s: %s\n", filename, strerror(errno));
+		return (free(filename), exit(126));
+	}
 	while (1)
 	{
 		str = readline("> ");
@@ -75,23 +111,34 @@ void	ft_heredoc_process(char **exec, int pipefd[2], t_info *info)
 			if (!str)
 				ft_printf(2, "Minishell: warning: here-document delimited by end-of-file (wanted %s)\n", exec[1]);
 			free(str);
+			free(filename);
+			close(fd);
 			free_all(info);
-			close(pipefd[1]);
 			exit(0);
 		}
-		i = ft_strlen(str);
-		ft_printf(pipefd[1],"%s\n", str);
+		ft_printf(fd,"%s\n", str);
 		free(str);
 	}
 }
 
-int	ft_heredoc_parent(int pid, int pipeh[2], int *status)
+int	ft_heredoc_parent(int pid,int *status, t_info *info)
 {
+	int	fd;
+
 	waitpid(pid, status, 0);
+	fd = open (info->heredoc, O_RDONLY);
+	if (fd == -1)
+	{
+		ft_printf(2, "Minishell: %s: %s\n", info->heredoc, strerror(errno));
+		return (estat(126), -1);
+	}
+	unlink(info->heredoc);
+	free(info->heredoc);
+	info->heredoc = NULL;
+	info->fd_in_child = fd;
 	set_signals();
 	if (WIFSIGNALED(*status))
 	{
-		close(pipeh[0]);
 		if (WTERMSIG(*status) == SIGINT)
 			return (-1);
 		if (WTERMSIG(*status) == SIGQUIT)
@@ -101,37 +148,31 @@ int	ft_heredoc_parent(int pid, int pipeh[2], int *status)
 			return (-1);
 		}
 	}
-	// this next if converts the standard in into what thier pipe had read
-	if (dup2(pipeh[0], STDIN_FILENO) == -1)
-		return (estat(1), -1);
-	close(pipeh[0]);
 	return (estat(0), 0);
 }
 
-int		ft_heredoc(char **exec, t_info *info)
+int	ft_heredoc(char **exec, t_info *info)
 {
 	int		status;
-	int		pipeh[2];
 	pid_t	pid;
+	char	*filename;
 
-	if (pipe(pipeh) == -1)
-		return (-1);
+	filename = heredoc_filename();
+	if (!filename)
+		return (ft_printf(2, "Minishell: failed to create heredoc filename\n"), -1);
+	info->heredoc = filename;
 	pid = fork();
 	if (pid == -1)
-		return (-1);
+		return (free(filename), -1);
 	if (pid == 0)
 	{
-		if (dup2(info->fd_in_out[0], STDIN_FILENO) == -1)
-			return (-1);
-		close(pipeh[0]);
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_IGN);
-		ft_heredoc_process(exec, pipeh, info);
+		ft_heredoc_process(exec, info, filename);
 	}
 	else
 	{
-		close(pipeh[1]);
-		if (ft_heredoc_parent(pid, pipeh, &status) == -1)
+		if (ft_heredoc_parent(pid, &status, info) == -1)
 			return (-1);
 	}
 	return (0);

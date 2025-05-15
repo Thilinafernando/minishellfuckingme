@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 19:48:49 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/08 16:13:02 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/14 21:00:04 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,24 @@ void	form_env(char **env, t_info	*info)
 	count = 0;
 	while(env[count])
 	{
+		if (ft_strncmp(env[count], "OLDPWD=", 7) == 0)
+			info->oldpwd = ft_strdup(env[count] + 7);
 		info->env[count] = ft_strdup(env[count]);
 		count++;
 	}
+	printf("oldpwd: %s\n", info->oldpwd);
 	info->env[count] = NULL;
 }
 
-void	ft_env(t_info *info)
+void	ft_env(char **matrix, t_info *info)
 {
 	int	i;
 
+	if (matrix[1])
+	{
+		ft_printf(2, "Minishell: env: '%s': No such file or directory\n", matrix[1]);
+		return ;
+	}
 	i = 0;
 	while (info->env[i])
 	{

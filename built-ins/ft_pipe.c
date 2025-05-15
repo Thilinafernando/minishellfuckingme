@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_pipe.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkurukul <thilinaetoro4575@gmail.com>      +#+  +:+       +#+        */
+/*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 18:52:49 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/06 23:44:52 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/15 18:35:48 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,24 @@ char	*build_full(char *path, char *command)
 	str = ft_strjoin(tmp, command);
 	free (tmp);
 	return (str);
+}
+
+int	is_directory(char *path)
+{
+	int	fd;
+	char	buf;
+
+	fd = open(path, O_RDONLY);
+	if (fd == -1)
+		return (0);
+	if (read(fd, &buf, 1) == -1)
+	{
+		close(fd);
+		ft_printf(2, "Minishell: %s: Is a directory\n", path);
+		return (1);
+	}
+	close(fd);
+	return (0);
 }
 
 char	*abs_path(char *command, t_info *info)

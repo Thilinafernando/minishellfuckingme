@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:09:42 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/13 19:16:35 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/15 23:47:48 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,12 @@ typedef struct s_info {
 	char	**env;
 	char	**tmp;
 	int		size;
-	int		flag_ri;
-	int	fd_in_out[2];
+	char	*oldpwd;
+	int		fd_in_out[2];
+	int		fd_in_child;
+	int		fd_out_child;
+	char	*heredoc;
 } t_info;
-
 
 typedef enum {
 	TOKEN_WORD,       // Regular words/commands
@@ -80,21 +82,22 @@ void	form_env(char **env, t_info	*info);
 void	print_pwd(void);
 void	ft_unset(t_info *info, char **args);
 void	ft_export(t_info *info, char **args);
-void	ft_env(t_info *info);
+void	ft_env(char **matrix, t_info *info);
 void	ft_cd(char **args, t_info *info);
 void	ft_echo(char **args);
-void	ft_exit(char **args, t_info *info);
+void  ft_exit(char **args, t_info *info);
 
 // redirections
-int	ft_input(char **exec);
-int	ft_output(char **exec);
-int	ft_append(char **exec);
-int		ft_heredoc(char **exec, t_info *info);
+int	ft_input(char **exec, t_info *info);
+int	ft_output(char **exec, t_info *info);
+int	ft_append(char **exec, t_info *info);
+int	ft_heredoc(char **exec, t_info *info);
 
 
 // dollar
-char	*dollarfull(char *str, t_info *info);
-int	arg_execve(char ***command, t_info *info);
+/* char	*dollarfull(char *str, t_info *info);
+int	arg_execve(char ***command, t_info *info); */
+
 
 // pipe and proccess
 void	ft_execution(t_info *info);
@@ -104,6 +107,7 @@ void		failure_command(int fd[2], char **str);
 char	*abs_path(char *command, t_info *info);
 char	*build_full(char *path, char *command);
 char	**find_path(char **envp);
+int		is_directory(char *path);
 
 // signals
 void	estat(int i);
@@ -128,8 +132,7 @@ int is_builtin(char **matrix);
 
 // free
 void	free3(char ***matrix);
-void	free_all(t_info *info);
-
+void  free_all(t_info *info);
 //parssing
 char	*mdollar(char *str, t_info *info);
 t_token	*free_tokens(t_token *head);
@@ -143,6 +146,15 @@ t_token	*handle_quotes(char *input, int *i, t_token *head, t_token *current, t_i
 int		validate_syntax(t_token *tokens);
 t_token *join_word_segment(char *segment, t_token *head, t_token **current_word_token);
 char *token_type_to_string(t_token_type token_type);
+////try//
+t_token *expand_and_tokenize_var(char *var_value, t_info *info);
+t_token *tokenize_string(char *str, t_info *info);
+t_token	*handle_redirection(char *input, int *i, t_token *head, t_token *current);
+char *extract_single_quote_content(char *input, int *i);
+char *extract_word_segment(char *input, int *i);
+char *extract_double_quote_content(char *input, int *i, t_info *info);
+t_token	*handle_pipe(int *i, t_token *head, t_token *current);
+
 
 
 #endif
