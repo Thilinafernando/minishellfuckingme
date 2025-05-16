@@ -6,13 +6,13 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:47:13 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/10 17:44:40 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:14:06 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*ft_pwd(void)
+char	*ft_pwd(t_info *info)
 {
 	char	*buf; //THE-PATH_MAX-ON-LINUX
 
@@ -20,16 +20,16 @@ char	*ft_pwd(void)
 	if (!buf)
 	{
 		ft_printf(2, "pwd: error while retrieving current directory: getcwd:");
-		return (estat(1), NULL);
+		return (estat(1, info), NULL);
 	}
-	return (estat(0), buf);
+	return (estat(0, info), buf);
 }
 
-void	print_pwd(void)
+void	print_pwd(t_info *info)
 {
 	char	*pwd;
 
-	pwd = ft_pwd();
+	pwd = ft_pwd(info);
 	ft_printf(1, "%s\n", pwd);
 	free(pwd);
 }

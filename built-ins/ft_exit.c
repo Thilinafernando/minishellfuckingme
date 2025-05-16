@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 18:23:50 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/13 18:10:38 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:35:19 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ void	ft_exit(char **args, t_info *info)
 			ft_printf(2,"Minishell: exit: too many arguments\n");
 			return ;
 		}
-		exit_status = ft_atoi(args[1]);
+		info->exit_status = ft_atoi(args[1]);
 	}
 	free_all(info);
-	exit(exit_status);
+	exit(info->exit_status);
 }

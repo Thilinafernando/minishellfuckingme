@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 15:15:16 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/12 18:26:45 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 18:43:13 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,31 @@
 
 #include "minishell.h"
 
-void	estat(int i)
+void	estat(int i, t_info *info)
 {
-	exit_status = i;
+	info->exit_status = i;
+}
+
+void	sstat(int i)
+{
+	signal_status = i;
 }
 
 void	ctrl_c(int sig)
 {
 	(void)sig;
 	ft_printf(1,"\n");
-	estat(130);
-	if (rl_done == 0)
-	{
-		rl_replace_line("", 0);
-		rl_on_new_line();
-		rl_redisplay();
-	}
+	sstat(130);
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	rl_redisplay();
 }
 
 void	sigquit(int sig)
 {
 	(void)sig;
 	// ft_printf(1, "Quit (core dumped)\n");
-	estat(131);
+	sstat(131);
 }
 
 void	set_signals(void)

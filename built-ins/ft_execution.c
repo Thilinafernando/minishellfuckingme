@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 18:29:40 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/16 00:45:13 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 19:33:33 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,12 @@ void	one_exec(char **command, t_info *info, int fd[2])
 	}
 	if (!str)
 	{
-		failure_command(fd, command);
+		failure_command(fd, command, info);
 		free_all(info);
-		exit (exit_status);
+		exit (info->exit_status);
 	}
 	execve(str, command, info->env);
-	failure(fd);
+	failure(fd, info);
 	free_all(info);
 	free(str);
 	exit (126);
@@ -68,7 +68,7 @@ int	ft_redirections(char **matrix, t_info *info)
 	ft_strcmp(matrix[0], ";>>") == 0)
 	{
 		ft_printf(2, "minishell: %s: command not found\n", matrix[0] + 1);
-		estat(127);
+		estat(127, info);
 		return (-2);
 	}
 	result = 0;
@@ -119,7 +119,7 @@ void exec_builtin(char **matrix, t_info *info)
 	if (ft_strcmp(matrix[0], "cd") == 0)
 		ft_cd(matrix, info);
 	else if (ft_strcmp(matrix[0], "pwd") == 0)
-		print_pwd();
+		print_pwd(info);
 	else if (ft_strcmp(matrix[0], "unset") == 0)
 		ft_unset(info, matrix);
 	else if (ft_strcmp(matrix[0], "export") == 0)
@@ -127,7 +127,7 @@ void exec_builtin(char **matrix, t_info *info)
 	else if (ft_strcmp(matrix[0], "env") == 0)
 		ft_env(matrix ,info);
 	else if (ft_strcmp(matrix[0], "echo") == 0)
-		ft_echo(matrix);
+		ft_echo(matrix, info);
 	else if (ft_strcmp(matrix[0], "exit") == 0)
 		ft_exit(matrix, info);
 }
@@ -153,7 +153,7 @@ int	istt_builtin(char ***matrix, t_info *info)
 		if (ft_strcmp(matrix[mat][0], "cd") == 0)
 			ft_cd(matrix[mat], info);
 		else if (ft_strcmp(matrix[mat][0], "pwd") == 0)
-			print_pwd();
+			print_pwd(info);
 		else if (ft_strcmp(matrix[mat][0], "unset") == 0)
 			ft_unset(info, matrix[mat]);
 		else if (ft_strcmp(matrix[mat][0], "export") == 0)
@@ -161,7 +161,7 @@ int	istt_builtin(char ***matrix, t_info *info)
 		else if (ft_strcmp(matrix[mat][0], "env") == 0)
 			ft_env(matrix[mat], info);
 		else if (ft_strcmp(matrix[mat][0], "echo") == 0)
-			ft_echo(matrix[mat]);
+			ft_echo(matrix[mat], info);
 		else if (ft_strcmp(matrix[mat][0], "exit") == 0)
 			ft_exit(matrix[mat], info);
 		else
@@ -244,7 +244,7 @@ void	ft_execution(t_info *info)
 	info->fd_in_out[0] = dup(STDIN_FILENO);
 	info->fd_in_out[1] = dup(STDOUT_FILENO);
 	count = count_exec_blocks(info->exec);
-	printf("count : %d\n", count);
+	// printf("count : %d\n", count);
 	pid_counts = 0;
 	prevpipe = -42;
 	mat = 0;
@@ -263,9 +263,10 @@ void	ft_execution(t_info *info)
 		// }
 		if (count == 1)
 		{
-			if (istt_builtin(info->exec, info) == -2)
+			flag = istt_builtin(info->exec, info);
+			if (flag == -2)
 				break;
-			if (istt_builtin(info->exec, info) != -1)
+			if (flag != -1)
 			{
 				ft_refresh_fd(info);
 				break;
@@ -276,9 +277,10 @@ void	ft_execution(t_info *info)
 			if (pipe(cpipe) == -1)
 			{
 				ft_printf(2, "Minishell: error pipe\n");
-					return (estat(1));
+					return (estat(1, info));
 			}
 		}
+		flag = 0;
 		while (is_redirection(info->exec[mat]) && info->exec[mat][0][0] != '|')
 		{
 			if (ft_redirections(info->exec[mat], info) == -1)
@@ -370,12 +372,12 @@ void	ft_execution(t_info *info)
 			exit(1);
 		}
 		if (WIFEXITED(status))
-			exit_status = WEXITSTATUS(status);
+			info->exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
 		{
 			if (WTERMSIG(status) == SIGQUIT)
 				ft_printf(2, "Quit (core dumped)\n");
-			exit_status = 128 + WTERMSIG(status);
+			info->exit_status = 128 + WTERMSIG(status);
 		}
 		j++;
 	}

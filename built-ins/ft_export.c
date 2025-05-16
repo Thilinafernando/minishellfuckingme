@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 01:47:10 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/09 22:25:16 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:12:52 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,14 +268,14 @@ void	ft_export(t_info *info, char **args)
 	if (!args[i])
 	{
 		print_export(info);
-		return (estat(0));
+		return (estat(0, info));
 	}
 	while (args[i])
 	{
 		if((verify(args[i]) != 0))
 		{
 			ft_printf(2, "Minishell: export: '%s' : not a valid identifier\n", args[i]);
-			return (estat(1));
+			return (estat(1, info));
 		}
 		else
 			count++;
@@ -304,7 +304,7 @@ void	ft_export(t_info *info, char **args)
 	info->size += count;
 	info->env = matrix_join(info, tmp, info->size);
 	free_mat(tmp);
-	return (estat(0));
+	return (estat(0, info));
 }
 
 

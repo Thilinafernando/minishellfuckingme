@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 16:47:35 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/15 16:47:05 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:36:33 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ char	*mdollar(char *str, t_info *info)
 	len = ft_strlen(str);
 	i = 0;
 	if (str[0] == '?')
-		return (ft_itoa(exit_status));
+		return (ft_itoa(info->exit_status));
 	else if (str[0] >= '0' && str[0] <= '9')
 		return (ft_strdup(str + 1));
 	while (info->env[i])

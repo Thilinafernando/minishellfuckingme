@@ -16,7 +16,8 @@ GNL_SRC = get_next_line.c get_next_line_utils.c
 
 SRCDIR = built-ins/
 SRC = built-ins/ft_pwd.c ft_env.c ft_cd.c ft_export.c ft_unset.c ft_echo.c ft_intergration.c testing_utils.c dollar.c \
-		ft_signal.c redirections.c utils_pipe.c ft_pipe.c ft_execution.c free.c ft_exit.c refresh_redirections.c
+		ft_signal.c redirections.c utils_pipe.c ft_pipe.c ft_execution.c free.c ft_exit.c refresh_redirections.c \
+		ftt_expansion.c
 PARSDIR = parssing/
 PRC = parssing/minishellnorm.c process_quotes.c utils.c syntax.c
 

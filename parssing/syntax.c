@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   syntax.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ilmahjou <ilmahjou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:59:37 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/12 18:25:21 by ilmahjou         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:24:58 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../built-ins/minishell.h"
 
-int validate_syntax(t_token *tokens)
+int validate_syntax(t_token *tokens, t_info *info)
 {
 	t_token *prev = NULL;
 
@@ -23,7 +23,7 @@ int validate_syntax(t_token *tokens)
 			if (!prev || !tokens->next || tokens->next->type == TOKEN_PIPE)
 			{
 				printf("minishell: syntax error near unexpected token `%s'\n", token_type_to_string(TOKEN_PIPE));
-				estat(2);
+				estat(2, info);
 				return (0);
 			}
 		}
@@ -33,7 +33,7 @@ int validate_syntax(t_token *tokens)
 			if (!tokens->next || tokens->next->type != TOKEN_WORD)
 			{
 				printf("minishell: syntax error near unexpected token `%s'\n", token_type_to_string(tokens->type));
-				estat(2);
+				estat(2, info);
 				return (0);
 			}
 		}

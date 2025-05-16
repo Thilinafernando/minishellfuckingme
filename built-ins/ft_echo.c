@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 22:13:33 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/10 20:36:23 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:11:20 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	checks(char **args, int i, int flag)
 	return (flag);
 }
 
-void	ft_echo(char **args)
+void	ft_echo(char **args, t_info *info)
 {
 	int	i;
 	int	flag;
@@ -65,7 +65,7 @@ void	ft_echo(char **args)
 	}
 	if (args[1] && ft_strncmp(args[1], "-n", 2) != 0)
 		printf("\n");
-	return (estat(0));
+	return (estat(0, info));
 }
 
 // int	main(int ac, char **av)

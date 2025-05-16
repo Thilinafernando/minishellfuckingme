@@ -6,13 +6,13 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:22:23 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/15 23:41:41 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/16 20:02:53 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../built-ins/minishell.h"
 
-int exit_status = 0;
+int signal_status = 0;
 
 t_token	*handle_pipe(int *i, t_token *head, t_token *current)
 {
@@ -335,11 +335,12 @@ int main(int ac, char **av, char **env)
 	{
 		set_signals();
 		info.pos = 0;
+		info.exit_status = 0;
 		info.fd_in_child = -420;
 		info.fd_out_child = -420;
 		info.exec = NULL;
 		info.tmp = NULL;
-		info.oldpwd = NULL;
+		// info.oldpwd = NULL;
 		//signal(SIGINT, ctrl_c);
 		// signal(SIGQUIT, estat);
 		line = readline("\001\033[1;32m\002minishell$ \001\033[0m\002");
@@ -347,6 +348,11 @@ int main(int ac, char **av, char **env)
 		{
 			write(1, "exit\n", 5);  // Print exit message on Ctrl+D
 			break;
+		}
+		if (signal_status != 0)
+		{
+			info.exit_status = signal_status;
+			signal_status = 0;
 		}
 		if (line[0] != '\0')
 		{
@@ -357,7 +363,7 @@ int main(int ac, char **av, char **env)
 				free(line);
 				continue;
 			}
-			if (!validate_syntax(token))
+			if (!validate_syntax(token, &info))
 			{
 				free_tokens(token);
 				continue;
@@ -365,7 +371,7 @@ int main(int ac, char **av, char **env)
 			}
 			if (token)
 			{
-				printf("%d\n", token->type);
+				// printf("%d\n", token->type);
 				form_main(token, &info);
 				i = 0;
 				while (info.exec[i])
@@ -374,12 +380,12 @@ int main(int ac, char **av, char **env)
 					//arg_execve(&info.exec[i], &info);
 					while (info.exec[i][j])
 					{
-						printf("%s\n", info.exec[i][j]);
+						// printf("%s\n", info.exec[i][j]);
 						j++;
 					}
-					printf("----------------------\n");
+					// printf("----------------------\n");
 					i++;
-					fflush(stdout);
+					// fflush(stdout);
 				}
 				free_tokens(token);  // Use your token free function
 				ft_execution(&info);
