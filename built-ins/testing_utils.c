@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:36:36 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/09 22:46:25 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/19 23:56:40 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,3 +82,56 @@ void	free_mat(char **matrix)
 	return ;
 }
 
+int		if_in(char ***exec, int mat)
+{
+	mat++;
+	while (exec[mat] && exec[mat][0][0] != '|')
+	{
+		if (ft_strcmp(exec[mat][0], "<") == 0
+		|| ft_strcmp(exec[mat][0], "<<") == 0)
+			return (1);
+		mat++;
+	}
+	return (0);
+}
+
+int		if_out(char ***exec, int mat)
+{
+	mat++;
+	while (exec[mat] && exec[mat][0][0] != '|')
+	{
+		if (ft_strcmp(exec[mat][0], ">") == 0
+		|| ft_strcmp(exec[mat][0], ">>") == 0)
+			return (1);
+		mat++;
+	}
+	return (0);
+}
+
+void	ft_remove(char ***matrix)
+{
+	int	i;
+	int j;
+	char	*tmp;
+
+	i = 0;
+	while (matrix[i])
+	{
+		j = 0;
+		while (matrix[i][j])
+		{
+			if (ft_strcmp(matrix[i][j], ";<") == 0 ||
+				ft_strcmp(matrix[i][j], ";>") == 0 ||
+				ft_strcmp(matrix[i][j], ";<<") == 0 ||
+				ft_strcmp(matrix[i][j], ";>>") == 0)
+			{
+				tmp = ft_strdup(matrix[i][j] + 1);
+				free(matrix[i][j]);
+				matrix[i][j] = tmp;
+			}
+			// ft_printf(1, "%s\n", matrix[i][j]);
+			j++;
+		}
+		i++;
+	}
+}

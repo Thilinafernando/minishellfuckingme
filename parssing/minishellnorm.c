@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:22:23 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/16 20:02:53 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/19 23:17:28 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,82 @@ t_token	*handle_redirection(char *input, int *i, t_token *head, t_token *current
 		head = new_token;
 	else
 		current->next = new_token;
+	return (head);
+}
+
+t_token *join_word_segment_2(char *segment, t_token *head, t_token **current_word_token)
+{
+	char *new_content;
+	t_token *new_token;
+
+	if (!segment)
+		return (free_tokens(head));
+
+	if (*current_word_token == NULL)
+	{
+		// No current word being built, create a new token
+		new_token = creat_token(segment, TOKEN_DQUOTE);
+		free(segment);
+		if (!new_token)
+			return (free_tokens(head));
+
+		if (!head)
+			head = new_token;
+		else
+			get_last_token(head)->next = new_token;
+
+		*current_word_token = new_token;
+	}
+	else
+	{
+		// Append to existing word token
+		new_content = ft_strjoin((*current_word_token)->content, segment);
+		free(segment);
+		if (!new_content)
+			return (free_tokens(head));
+
+		free((*current_word_token)->content);
+		(*current_word_token)->content = new_content;
+	}
+
+	return (head);
+}
+
+t_token *join_word_segment_3(char *segment, t_token *head, t_token **current_word_token)
+{
+	char *new_content;
+	t_token *new_token;
+
+	if (!segment)
+		return (free_tokens(head));
+
+	if (*current_word_token == NULL)
+	{
+		// No current word being built, create a new token
+		new_token = creat_token(segment, TOKEN_SQUOTE);
+		free(segment);
+		if (!new_token)
+			return (free_tokens(head));
+
+		if (!head)
+			head = new_token;
+		else
+			get_last_token(head)->next = new_token;
+
+		*current_word_token = new_token;
+	}
+	else
+	{
+		// Append to existing word token
+		new_content = ft_strjoin((*current_word_token)->content, segment);
+		free(segment);
+		if (!new_content)
+			return (free_tokens(head));
+
+		free((*current_word_token)->content);
+		(*current_word_token)->content = new_content;
+	}
+
 	return (head);
 }
 
@@ -271,12 +347,12 @@ t_token *tokenize_input(char *input, t_info *info)
 
 	while (input[i])
 	{
-		if (input[i] == ' ' || input[i] == '\t') // Space - end of current word
+		while (input[i] == ' ' || input[i] == '\t') // Space - end of current word
 		{
 			current_word_token = NULL; // Reset current word
 			i++;
 		}
-		else if (input[i] == '|') // Pipe - end of current word and command
+		if (input[i] == '|') // Pipe - end of current word and command
 		{
 			current_word_token = NULL; // Reset current word
 			head = handle_pipe(&i, head, get_last_token(head));
@@ -291,14 +367,14 @@ t_token *tokenize_input(char *input, t_info *info)
 			segment = extract_single_quote_content(input, &i);
 			if (!segment)
 				return (free_tokens(head)); // Return NULL after freeing tokens
-			head = join_word_segment(segment, head, &current_word_token);
+			head = join_word_segment_3(segment, head, &current_word_token);
 		}
 		else if (input[i] == '"') // Double quotes
 		{
 			segment = extract_double_quote_content(input, &i, info);
 			if (!segment)
 				return (free_tokens(head)); // Return NULL after freeing tokens
-			head = join_word_segment(segment, head, &current_word_token);
+			head = join_word_segment_2(segment, head, &current_word_token);
 		}
 		else if (input[i] == '$') // Variable
 		{
@@ -380,12 +456,12 @@ int main(int ac, char **av, char **env)
 					//arg_execve(&info.exec[i], &info);
 					while (info.exec[i][j])
 					{
-						// printf("%s\n", info.exec[i][j]);
+						printf("%s\n", info.exec[i][j]);
 						j++;
 					}
-					// printf("----------------------\n");
+					printf("----------------------\n");
 					i++;
-					// fflush(stdout);
+					fflush(stdout);
 				}
 				free_tokens(token);  // Use your token free function
 				ft_execution(&info);
@@ -395,5 +471,8 @@ int main(int ac, char **av, char **env)
 	}
 	clear_history();
 	free_mat(info.env);
+	close (1);
+	close (2);
+	close (0);
 	return (0);
 }

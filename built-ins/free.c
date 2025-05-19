@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 01:31:10 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/16 20:02:18 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/19 18:41:27 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,7 @@ void	free_all(t_info *info)
 	free_mat(info->env);
 	// free(info->oldpwd);
 	close_fd(info->fd_in_out);
+	close(0);
+	close(1);
+	close(2);
 }

@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 18:52:49 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/15 18:35:48 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:09:44 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,21 +53,19 @@ char	*build_full(char *path, char *command)
 	return (str);
 }
 
-int	is_directory(char *path)
+int	is_directory(const char *path)
 {
-	int	fd;
-	char	buf;
+	DIR	*dir;
 
-	fd = open(path, O_RDONLY);
-	if (fd == -1)
+	if (!path)
 		return (0);
-	if (read(fd, &buf, 1) == -1)
+	dir = opendir(path);
+	if (dir)
 	{
-		close(fd);
+		closedir(dir);
 		ft_printf(2, "Minishell: %s: Is a directory\n", path);
 		return (1);
 	}
-	close(fd);
 	return (0);
 }
 

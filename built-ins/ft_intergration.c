@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 20:19:42 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/15 22:06:17 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/19 22:36:13 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,21 @@ void	save_redirections(t_info *info, t_token *token)
 	tmp = token;
 	while (tmp && tmp->type != 1)
 	{
+		// if ((tmp->type == 5 || tmp->type == 6) && ((ft_strcmp(tmp->content, "<") == 0
+		// 		|| ft_strcmp(tmp->content, ">") == 0
+		// 		|| ft_strcmp(tmp->content, ">>") == 0
+		// 		|| ft_strcmp(tmp->content, "<<") == 0)))
+		// 	{
+		// 		matrix = malloc(3 * sizeof(char*));
+		// 		if (!matrix)
+		// 			return ;
+		// 		matrix[2] = NULL;
+		// 		matrix[0] = ft_strjoin(";", tmp->content);
+		// 		matrix[1] = ft_strdup(tmp->next->content);
+		// 		info->exec[info->pos] = matrix;
+		// 		info->pos++;
+		// 		tmp = tmp->next;
+		// 	}
 		if (tmp->type == 2 || tmp->type == 3
 			|| tmp->type == 4 || tmp->type == 7)
 		{
@@ -83,18 +98,18 @@ void	save_command(t_info *info, t_token **token)
 		if ((*token)->type != 2 && (*token)->type != 4
 			&& (*token)->type != 3 && (*token)->type != 7)
 		{
-			// if (((*token)->type == 5 || (*token)->type == 6) && ((ft_strcmp((*token)->content, "<") == 0
-			// 	|| ft_strcmp((*token)->content, ">") == 0
-			// 	|| ft_strcmp((*token)->content, ">>") == 0
-			// 	|| ft_strcmp((*token)->content, "<<") == 0)))
-			// 	matrix[j] = ft_strjoin(";", (*token)->content);
+			if (((*token)->type == 5 || (*token)->type == 6) && ((ft_strcmp((*token)->content, "<") == 0
+				|| ft_strcmp((*token)->content, ">") == 0
+				|| ft_strcmp((*token)->content, ">>") == 0
+				|| ft_strcmp((*token)->content, "<<") == 0)))
+				matrix[j] = ft_strjoin(";", (*token)->content);
 			// {
 			// 	matrix[j] = ft_strdup("$");
 			// 	j++;
 			// 	matrix[j] = ft_strdup((*token)->content);
 			// }
-			// else
-			matrix[j] = ft_strdup((*token)->content);
+			else
+				matrix[j] = ft_strdup((*token)->content);
 			j++;
 			(*token) = (*token)->next;
 		}
@@ -142,7 +157,7 @@ void	form_main(t_token *token, t_info *info)
 	tmp = token;
 	while(tmp)
 	{
-		if (tmp->type == 0)
+		if (tmp->type == 0 || tmp->type == 5 || tmp->type == 6)
 			size++;
 		while (tmp && tmp->type != 1)
 		{

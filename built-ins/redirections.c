@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 22:04:01 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/16 19:20:35 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/19 17:31:59 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char	*heredoc_filename(void)
 	return (filename);
 }
 
-// expand dollar here!
+
 
 void	ft_heredoc_process(char **exec, t_info *info, char *filename)
 {
@@ -110,12 +110,14 @@ void	ft_heredoc_process(char **exec, t_info *info, char *filename)
 		str = readline("> ");
 		if (!str || !exec[1] || ft_strcmp(str, exec[1]) == 0)
 		{
-			if (!str)
+			if (!str && signal_status != 130)
 				ft_printf(2, "Minishell: warning: here-document delimited by end-of-file (wanted %s)\n", exec[1]);
 			free(str);
 			free(filename);
 			close(fd);
 			free_all(info);
+			if (signal_status == 130)
+				exit(130);
 			exit(0);
 		}
 		dollar = expand_dollar1(str, info);
@@ -180,7 +182,7 @@ int	ft_heredoc(char **exec, t_info *info)
 		return (free(filename), -1);
 	if (pid == 0)
 	{
-		signal(SIGINT, SIG_DFL);
+		signal(SIGINT, ctrl_c_here);
 		signal(SIGQUIT, SIG_IGN);
 		ft_heredoc_process(exec, info, filename);
 	}

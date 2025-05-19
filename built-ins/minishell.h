@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:09:42 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/16 20:02:26 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/19 22:55:08 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/wait.h>
 # include <errno.h>
 # include <unistd.h>
+#include <dirent.h>
 # include <stdio.h>
 # include <string.h>
 # include <signal.h>
@@ -92,7 +93,7 @@ int	ft_input(char **exec, t_info *info);
 int	ft_output(char **exec, t_info *info);
 int	ft_append(char **exec, t_info *info);
 int	ft_heredoc(char **exec, t_info *info);
-
+void	ctrl_c_here(int sig);
 
 // dollar
 /* char	*dollarfull(char *str, t_info *info);
@@ -110,7 +111,7 @@ void		failure_command(int fd[2], char **str, t_info *info);
 char	*abs_path(char *command, t_info *info);
 char	*build_full(char *path, char *command);
 char	**find_path(char **envp);
-int		is_directory(char *path);
+int		is_directory(const char *path);
 
 // signals
 void	estat(int i, t_info *info);
@@ -130,6 +131,10 @@ void ft_listadd_back(t_token **lst, t_token *new);
 t_token *ft_newnode(char *content, t_token_type type);
 char	*ft_strncpy(char *dest, char *src, unsigned int n);
 void	ft_refresh_fd(t_info *info);
+int		if_out(char ***exec, int mat);
+int		if_in(char ***exec, int mat);
+void	ft_remove(char ***matrix);
+
 
 
 int is_builtin(char **matrix);
@@ -157,7 +162,7 @@ char *extract_single_quote_content(char *input, int *i);
 char *extract_word_segment(char *input, int *i);
 char *extract_double_quote_content(char *input, int *i, t_info *info);
 t_token	*handle_pipe(int *i, t_token *head, t_token *current);
-
-
+t_token *join_word_segment_2(char *segment, t_token *head, t_token **current_word_token);
+t_token *join_word_segment_3(char *segment, t_token *head, t_token **current_word_token);
 
 #endif
