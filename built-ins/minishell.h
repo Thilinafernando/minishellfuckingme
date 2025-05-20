@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:09:42 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/19 22:55:08 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/20 22:00:07 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void	ft_env(char **matrix, t_info *info);
 void	ft_cd(char **args, t_info *info);
 void	ft_echo(char **args, t_info *info);
 void	ft_exit(char **args, t_info *info);
+void	ft_pipe_exit(char **args, t_info *info);
 
 // redirections
 int	ft_input(char **exec, t_info *info);

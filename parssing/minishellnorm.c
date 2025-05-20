@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:22:23 by ilmahjou          #+#    #+#             */
-/*   Updated: 2025/05/19 23:17:28 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/20 22:02:24 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -406,12 +406,12 @@ int main(int ac, char **av, char **env)
 		return (1);
 	}
 	form_env(env, &info);
+	info.exit_status = 0;
 	using_history();
 	while (1)
 	{
 		set_signals();
 		info.pos = 0;
-		info.exit_status = 0;
 		info.fd_in_child = -420;
 		info.fd_out_child = -420;
 		info.exec = NULL;

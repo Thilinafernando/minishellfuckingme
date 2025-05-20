@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:48:21 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/16 17:18:16 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/21 00:34:13 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,45 @@
 // mat_remove
 // when returning the status of the signal global variable should change (ex; exit(0) || exit(1))
 
+int	verify_unset(char *str, t_info *info)
+{
+	int	i;
+
+	i = 0;
+	if (!((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z') || str[i] == '_'))
+	{
+		ft_printf(2, "Minishell: unset: %s: not a valid identifier\n", str);
+		estat(1, info);
+		return (-1);
+	}
+	else
+		i++;
+	while(str[i])
+	{
+		if ((str[i] >= 'a' && str[i] <= 'z') || ((str[i] >= 'A' && str[i] <= 'Z')) || str[i] == '_'
+		|| (str[i] >= '0' && str[i] <= '9'))
+			i++;
+		else
+		{
+			ft_printf(2, "Minishell: unset: %s: not a valid identifier\n", str);
+			estat(1, info);
+			return (-1);
+		}
+	}
+	return (0);
+}
 
 int	calcu(char **args, t_info *info)
 {
 	int	i;
 	int	size;
 
-	i = 0;
+	i = 1;
 	size = 0;
 	while (args[i])
 	{
 		// control any dupes because you remove only once because if not it will count multiple dups.
-		if (exisit(info->tmp, args[i]) != -1 && verify_equal(args[i]) == -1)
+		if (( (verify_unset(args[i], info) == 0) && exisit(info->tmp, args[i]) != -1))
 			size++;
 		i++;
 	}
@@ -43,7 +70,7 @@ int	dups(char **args)
 	int	j;
 	int	count;
 
-	i = 0;
+	i = 1;
 	count = 0;
 	while (args[i])
 	{
@@ -71,7 +98,7 @@ int	yes_unset(t_info *info, char **args, int i)
 	while (args[x])
 	{
 		len = ft_strlen(args[x]);
-		if (ft_strncmp(args[x], info->tmp[i], len) == 0 && info->tmp[i][len] == '=' && verify_equal(args[x]) == -1)
+		if (ft_strncmp(args[x], info->tmp[i], len) == 0 && (info->tmp[i][len] == '=' || info->tmp[i][len] == '\0') && (verify_unset(args[x], info) == 0))
 			return (1);
 		x++;
 	}
@@ -87,7 +114,9 @@ static void	proccess(t_info *info, char **args)
 	i = 0;
 	while (info->tmp[i])
 		i++;
+	printf("%d\n", i);
 	size = i - (calcu(args, info) - dups(args));
+	printf("size; %d\n", size);
 	info->env = malloc((size + 1) * sizeof(char *));
 	if (!info->env)
 		return (estat(1, info));
@@ -102,12 +131,14 @@ static void	proccess(t_info *info, char **args)
 		}
 		i++;
 	}
-	info->env[j] = NULL;
+	printf("j; %d\n", j);
+	info->env[size] = NULL;
 	free_mat(info->tmp);
 }
 // calculate how many have to be removed with exisit, malloc matrix - remove args
 // strcmp with arg and variables in tmp and strdup the !=;
 // save in env
+
 
 
 void	ft_unset(t_info *info, char **args)
@@ -117,7 +148,7 @@ void	ft_unset(t_info *info, char **args)
 	matrix_tmp(info);
 	free_mat(info->env);
 	proccess(info, args);
-	return (estat(0, info));
+	return (estat(info->exit_status, info));
 }
 
 /* int	main(int ac, char **av, char **env)

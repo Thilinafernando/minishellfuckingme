@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 22:04:01 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/19 17:31:59 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/20 23:06:55 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,12 @@ int	ft_input(char **exec, t_info *info)
 	if (fd == -1)
 	{
 		ft_printf(2., "Minishell : %s: %s\n", exec[1], strerror(errno));
-		return (estat(126, info), -1);
+		if (errno == ENOENT)
+			return (estat(127 , info), -1);
+		else if (errno == EACCES)
+			return (estat(126 , info), -1);
+		else
+			return (estat(1 , info), -1);
 	}
 	info->fd_in_child = fd;
 	return (0);
@@ -36,7 +41,12 @@ int	ft_output(char **exec, t_info *info)
 	if (fd == -1)
 	{
 		ft_printf(2., "Minishell : %s: %s\n", exec[1], strerror(errno));
-		return (estat(126, info), -1);
+		if (errno == ENOENT)
+			return (estat(127 , info), -1);
+		else if (errno == EACCES)
+			return (estat(126 , info), -1);
+		else
+			return (estat(1 , info), -1);
 	}
 	info->fd_out_child = fd;
 	return (0);
@@ -50,7 +60,12 @@ int	ft_append(char **exec, t_info *info)
 	if (fd == -1)
 	{
 		ft_printf(2., "Minishell : %s: %s\n", exec[1], strerror(errno));
-		return (estat(126, info), -1);
+		if (errno == ENOENT)
+			return (estat(127 , info), -1);
+		else if (errno == EACCES)
+			return (estat(126 , info), -1);
+		else
+			return (estat(1 , info), -1);
 	}
 	info->fd_out_child = fd;
 	return (0);

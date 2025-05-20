@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 01:47:10 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/16 17:12:52 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/21 00:30:31 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,16 @@ int	exisit(char **matrix, char *arg)
 {
 	int	i;
 	int	len;
+	int	flag;
 
 	i = 0;
+	flag = 0;
 	len = 0;
 	while (arg[len] && arg[len] != '=')
 		len++;
 	while (matrix[i])
 	{
-		if (ft_strncmp(matrix[i], arg, len) == 0 && matrix[i][len] == '=')
+		if (ft_strncmp(matrix[i], arg, len) == 0 && (matrix[i][len] == '=' || matrix[i][len] == '\0'))
 			return (i);
 		i++;
 	}
@@ -235,17 +237,21 @@ void	print_export(t_info *info)
 	sorting(info);
 	while(info->tmp[++i])
 	{
+		if (ft_strncmp(info->tmp[i], "_=", 2) == 0)
+			continue;
 		flag = 0;
 		j = -1;
 		ft_printf(1, "declare -x ");
 		while (info->tmp[i][++j])
 		{
 			ft_printf(1, "%c", info->tmp[i][j]);
-			if ((info->tmp[i][j] == 61 && flag == 0) || (!info->tmp[i][j + 1] && flag != 0))
+			if ((info->tmp[i][j] == 61 && flag == 0))
 			{
 				ft_printf(1, "%c", c);
 				flag = 1;
 			}
+			if ((!info->tmp[i][j + 1] && flag != 0))
+				ft_printf(1, "%c", c);
 		}
 		ft_printf(1, "\n");
 	}
@@ -261,7 +267,6 @@ void	ft_export(t_info *info, char **args)
 	int	count;
 	char	**tmp;
 
-	printf("ft_export called!\n");
 	i = 1;
 	x = 0;
 	count = 0;
@@ -275,7 +280,7 @@ void	ft_export(t_info *info, char **args)
 		if((verify(args[i]) != 0))
 		{
 			ft_printf(2, "Minishell: export: '%s' : not a valid identifier\n", args[i]);
-			return (estat(1, info));
+			estat(1, info);
 		}
 		else
 			count++;
@@ -304,7 +309,7 @@ void	ft_export(t_info *info, char **args)
 	info->size += count;
 	info->env = matrix_join(info, tmp, info->size);
 	free_mat(tmp);
-	return (estat(0, info));
+	return (estat(info->exit_status, info));
 }
 
 

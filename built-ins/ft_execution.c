@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 18:29:40 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/20 00:40:45 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/20 22:00:29 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ void exec_builtin(char **matrix, t_info *info)
 	else if (ft_strcmp(matrix[0], "echo") == 0)
 		ft_echo(matrix, info);
 	else if (ft_strcmp(matrix[0], "exit") == 0)
-		ft_exit(matrix, info);
+		ft_pipe_exit(matrix, info);
 }
 
 int	istt_builtin(char ***matrix, t_info *info)
@@ -285,6 +285,8 @@ void	ft_execution(t_info *info)
 				ft_refresh_fd(info);
 				break;
 			}
+			if (flag == 0)
+				break;
 		}
 		if (i != (count - 1))
 		{
@@ -364,7 +366,7 @@ void	ft_execution(t_info *info)
 			{
 				exec_builtin(info->exec[mat], info);
 				free_all(info);
-				exit(0);
+				exit(info->exit_status);
 			}
 			else
 				one_exec(info->exec[mat], info, cpipe);
@@ -406,13 +408,16 @@ void	ft_execution(t_info *info)
 			free3(info->exec);
 			exit(1);
 		}
-		if (WIFEXITED(status))
-			info->exit_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
+		if (j == (pid_counts - 1))
 		{
-			if (WTERMSIG(status) == SIGQUIT)
-				ft_printf(2, "Quit (core dumped)\n");
-			info->exit_status = 128 + WTERMSIG(status);
+			if (WIFEXITED(status))
+				info->exit_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+			{
+				if (WTERMSIG(status) == SIGQUIT)
+					ft_printf(2, "Quit (core dumped)\n");
+				info->exit_status = 128 + WTERMSIG(status);
+			}
 		}
 		j++;
 	}
