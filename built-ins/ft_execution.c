@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 18:29:40 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/20 22:00:29 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/22 17:36:02 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,7 +253,9 @@ void	ft_execution(t_info *info)
 	cpipe[0] = -1;
 	cpipe[1] = -1;
 	info->fd_in_out[0] = dup(STDIN_FILENO);
+	ft_printf(1, "in; %d\n", info->fd_in_out[0]);
 	info->fd_in_out[1] = dup(STDOUT_FILENO);
+	ft_printf(1, "out; %d\n", info->fd_in_out[1]);
 	count = count_exec_blocks(info->exec);
 	printf("count : %d\n", count);
 	pid_counts = 0;
@@ -369,7 +371,11 @@ void	ft_execution(t_info *info)
 				exit(info->exit_status);
 			}
 			else
+			{
+				close(info->fd_in_out[0]);
+				close(info->fd_in_out[1]);
 				one_exec(info->exec[mat], info, cpipe);
+			}
 		}
 		else
 		{

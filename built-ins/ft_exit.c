@@ -6,7 +6,7 @@
 /*   By: tkurukul <tkurukul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 18:23:50 by tkurukul          #+#    #+#             */
-/*   Updated: 2025/05/21 00:41:13 by tkurukul         ###   ########.fr       */
+/*   Updated: 2025/05/22 17:04:05 by tkurukul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,21 +33,26 @@ int		is_num(char *str)
 
 void	ft_exit(char **args, t_info *info)
 {
-	int	num;
+	int		i;
+	int		num;
 
+	i = 0;
 	ft_printf(1, "exit\n");
 	if (args[1])
 	{
-		if (is_num(args[1]) == -1 && !args[2])
+		while (args[++i])
 		{
-			ft_printf(2, "Minishell: exit: %s: numeric argument required\n", args[1]);
-			free_all(info);
-			exit(2);
+			if (is_num(args[i]) == -1)
+			{
+				ft_printf(2, "Minishell: exit: %s: numeric argument required\n", args[1]);
+				free_all(info);
+				exit(1);
+			}
 		}
 		if (args[2])
 		{
 			ft_printf(2,"Minishell: exit: too many arguments\n");
-			return (estat(2, info));
+			return (estat(1, info));
 		}
 		num = ft_atoi(args[1]);
 		if (num < 0)
@@ -61,20 +66,25 @@ void	ft_exit(char **args, t_info *info)
 
 void	ft_pipe_exit(char **args, t_info *info)
 {
-	int	num;
+	int		i;
+	int		num;
 
+	i = 0;
 	if (args[1])
 	{
-		if (is_num(args[1]) == -1 && !args[2])
+		while (args[++i])
 		{
-			ft_printf(2, "Minishell: exit: %s: numeric argument required\n", args[1]);
-			free_all(info);
-			exit(2);
+			if (is_num(args[i]) == -1)
+			{
+				ft_printf(2, "Minishell: exit: %s: numeric argument required\n", args[1]);
+				free_all(info);
+				exit(1);
+			}
 		}
 		if (args[2])
 		{
 			ft_printf(2,"Minishell: exit: too many arguments\n");
-			return (estat(2, info));
+			return (estat(1, info));
 		}
 		num = ft_atoi(args[1]);
 		if (num < 0)
